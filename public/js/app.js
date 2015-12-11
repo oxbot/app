@@ -17,11 +17,11 @@ webpackJsonp([1],{
 	var Home = __webpack_require__(213);
 	var Page = __webpack_require__(214);
 	var Calling = __webpack_require__(216);
-	var Login = __webpack_require__(217);
-	var Register = __webpack_require__(218);
+	var Login = __webpack_require__(219);
+	var Register = __webpack_require__(220);
 
-	__webpack_require__(219);
-	__webpack_require__(228);
+	__webpack_require__(221);
+	__webpack_require__(230);
 
 	// Run the routes
 	var routes = React.createElement(
@@ -134,7 +134,7 @@ webpackJsonp([1],{
 	                React.createElement(
 	                  "a",
 	                  { href: "#/page" },
-	                  "Page"
+	                  "Main"
 	                )
 	              ),
 	              React.createElement(
@@ -337,12 +337,12 @@ webpackJsonp([1],{
 	      React.createElement(
 	        "h1",
 	        null,
-	        "Page"
+	        "Profile"
 	      ),
 	      React.createElement(
 	        "p",
 	        null,
-	        "Demo another page here ",
+	        "Welcome ",
 	        name
 	      )
 	    );
@@ -361,8 +361,8 @@ webpackJsonp([1],{
 	// API object
 	var api = {
 	  // get the list of items, call the callback when complete
-	  getItems: function (cb) {
-	    var url = "/api/items";
+	  getCalling: function (cb) {
+	    var url = "/api/getcalling";
 	    $.ajax({
 	      url: url,
 	      dataType: 'json',
@@ -379,14 +379,15 @@ webpackJsonp([1],{
 	    });
 	  },
 	  // add an item, call the callback when complete
-	  addItem: function (title, cb) {
-	    var url = "/api/items";
+	  addCalling: function (title, name, cb) {
+	    var url = "/api/users/addcalling";
 	    $.ajax({
 	      url: url,
 	      contentType: 'application/json',
 	      data: JSON.stringify({
-	        item: {
-	          'title': title
+	        user: {
+	          'calling': title,
+	          'username': name
 	        }
 	      }),
 	      type: 'POST',
@@ -400,50 +401,54 @@ webpackJsonp([1],{
 	        if (cb) cb(false, status);
 	      }
 	    });
-	  },
-	  // update an item, call the callback when complete
-	  updateItem: function (item, cb) {
-	    var url = "/api/items/" + item.id;
-	    $.ajax({
-	      url: url,
-	      contentType: 'application/json',
-	      data: JSON.stringify({
-	        item: {
-	          title: item.title,
-	          completed: item.completed
-	        }
-	      }),
-	      type: 'PUT',
-	      headers: { 'Authorization': localStorage.token },
-	      success: function (res) {
-	        if (cb) cb(true, res);
-	      },
-	      error: function (xhr, status, err) {
-	        // if there is any error, remove any login token
-	        delete localStorage.token;
-	        if (cb) cb(false, status);
-	      }
-	    });
-	  },
-	  // delete an item, call the callback when complete
-	  deleteItem: function (item, cb) {
-	    var url = "/api/items/" + item.id;
-	    $.ajax({
-	      url: url,
-	      type: 'DELETE',
-	      headers: { 'Authorization': localStorage.token },
-	      success: function (res) {
-	        if (cb) cb(true, res);
-	      },
-	      error: function (xhr, status, err) {
-	        // if there is an error, remove any login token
-	        delete localStorage.token;
-	        if (cb) cb(false, status);
-	      }
-	    });
-	  }
+	  } };
 
-	};
+	/*
+	// update an item, call the callback when complete
+	updateItem: function(item, cb) {
+	var url = "/api/items/" + item.id;
+	$.ajax({
+	  url: url,
+	  contentType: 'application/json',
+	  data: JSON.stringify({
+	    item: {
+	      title: item.title,
+	      completed: item.completed
+	    }
+	  }),
+	  type: 'PUT',
+	  headers: {'Authorization': localStorage.token},
+	  success: function(res) {
+	    if (cb)
+	      cb(true, res);
+	  },
+	  error: function(xhr, status, err) {
+	    // if there is any error, remove any login token
+	    delete localStorage.token;
+	    if (cb)
+	      cb(false, status);
+	  }
+	});
+	},
+	// delete an item, call the callback when complete
+	deleteItem: function(item, cb) {
+	var url = "/api/items/" + item.id;
+	$.ajax({
+	  url: url,
+	  type: 'DELETE',
+	  headers: {'Authorization': localStorage.token},
+	  success: function(res) {
+	    if (cb)
+	      cb(true, res);
+	  },
+	  error: function(xhr, status, err) {
+	    // if there is an error, remove any login token
+	    delete localStorage.token;
+	    if (cb)
+	      cb(false, status);
+	  }
+	});
+	}*/
 
 	module.exports = api;
 
@@ -458,6 +463,8 @@ webpackJsonp([1],{
 
 	var api = __webpack_require__(215);
 	var auth = __webpack_require__(212);
+	var CallingEntry = __webpack_require__(217);
+	var CallDisplay = __webpack_require__(218);
 
 	var Calling = React.createClass({
 	  displayName: "Calling",
@@ -470,9 +477,27 @@ webpackJsonp([1],{
 	  // initial state
 	  getInitialState: function () {
 	    return {
-	      // list of items in the todo list
-	      items: []
+	      //calling of user
+	      calling: ''
 	    };
+	  },
+
+	  // reload the list of items
+	  reload: function () {
+	    api.getCalling(this.setCalling);
+	  },
+
+	  // callback for getting the list of items, sets the list state
+	  setCalling: function (status, data) {
+	    if (status) {
+	      // set the state for the list of items
+	      this.setState({
+	        calling: data.calling
+	      });
+	    } else {
+	      // if the API call fails, redirect to the login page
+	      this.context.router.transitionTo('/login');
+	    }
 	  },
 
 	  render: function () {
@@ -485,11 +510,13 @@ webpackJsonp([1],{
 	        null,
 	        "Enter your calling"
 	      ),
+	      React.createElement(CallingEntry, { name: name, reload: this.reload }),
 	      React.createElement(
 	        "p",
 	        null,
-	        "You will be able to collaborate and get ideas from others who hold or have held your calling"
-	      )
+	        "You will be able to collaborate and get ideas from others who hold or have held the same calling"
+	      ),
+	      React.createElement(CallDisplay, { calling: this.state.calling, reload: this.reload })
 	    );
 	  }
 	});
@@ -499,6 +526,79 @@ webpackJsonp([1],{
 /***/ },
 
 /***/ 217:
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+
+	var api = __webpack_require__(215);
+
+	// List entry component, handles adding new items to the list
+	var CallingEntry = React.createClass({
+	  displayName: "CallingEntry",
+
+	  // handles submit event for adding a new item
+	  addCalling: function (event) {
+	    // prevent default browser submit
+	    event.preventDefault();
+	    // get data from form
+	    var title = this.refs.title.value;
+	    if (!title) {
+	      return;
+	    }
+	    // call API to add calling, and reload once added
+	    api.addCalling(title, this.props.name, this.props.reload);
+	    this.refs.title.value = '';
+	  },
+
+	  // render the item entry area
+	  render: function () {
+	    return React.createElement(
+	      "header",
+	      { id: "input" },
+	      React.createElement(
+	        "form",
+	        { id: "calling-form", name: "callingForm", onSubmit: this.addCalling },
+	        React.createElement("input", { type: "text", id: "new-calling", ref: "title", placeholder: "Enter your calling", autoFocus: true })
+	      )
+	    );
+	  }
+	});
+
+	module.exports = CallingEntry;
+
+/***/ },
+
+/***/ 218:
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+
+	var api = __webpack_require__(215);
+
+	// Item shown in the todo list
+	var CallDisplay = React.createClass({
+	  displayName: "CallDisplay",
+
+	  // render the calling
+	  render: function () {
+
+	    return React.createElement(
+	      "div",
+	      { className: "view" },
+	      React.createElement(
+	        "p",
+	        null,
+	        this.props.calling
+	      )
+	    );
+	  }
+	});
+
+	module.exports = CallDisplay;
+
+/***/ },
+
+/***/ 219:
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
@@ -572,7 +672,7 @@ webpackJsonp([1],{
 
 /***/ },
 
-/***/ 218:
+/***/ 220:
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
@@ -648,14 +748,14 @@ webpackJsonp([1],{
 
 /***/ },
 
-/***/ 219:
+/***/ 221:
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
 /***/ },
 
-/***/ 228:
+/***/ 230:
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin

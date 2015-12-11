@@ -56,40 +56,24 @@ app.post('/api/users/login', function (req, res) {
     }
   });
 });
-/*
-// get all items for the user
-app.get('/api/items', function (req,res) {
-  // validate the supplied token
-  user = User.verifyToken(req.headers.authorization, function(user) {
-    if (user) {
-      // if the token is valid, find all the user's items and return them
-      Item.find({user:user.id}, function(err, items) {
-	if (err) {
-	  res.sendStatus(403);
-	  return;
-	}
-	// return value is the list of items as JSON
-	res.json({items: items});
-      });
-    } else {
-      res.sendStatus(403);
-    }
-  });
-});
 
-// add an item
-app.post('/api/items', function (req,res) {
+// add a calling to a user
+app.post('/api/users/addcalling', function (req,res) {
   // validate the supplied token
+  console.log("in add calling");
   // get indexes
   user = User.verifyToken(req.headers.authorization, function(user) {
     if (user) {
-      // if the token is valid, create the item for the user
-      Item.create({title:req.body.item.title,completed:false,user:user.id}, function(err,item) {
-	if (err) {
-	  res.sendStatus(403);
-	  return;
-	}
-	res.json({item:item});
+      // if the token is valid, update the calling for the user
+      console.log(req.body.user.calling);
+      console.log(req.body.user.username);
+      User.update({username:req.body.user.username},{calling:req.body.user.calling}, function(err,item) {
+  if (err) {
+    res.sendStatus(403);
+    return;
+  }
+  console.log(item);
+  res.json({call: user.calling});
       });
     } else {
       res.sendStatus(403);
@@ -97,6 +81,32 @@ app.post('/api/items', function (req,res) {
   });
 });
 
+// get all items for the user
+app.get('/api/getcalling', function (req,res) {
+  console.log("in get calling");
+  // validate the supplied token
+  user = User.verifyToken(req.headers.authorization, function(user) {
+    if (user) {
+      
+      // if the token is valid, find all the user's items and return them
+      User.find({user:user.id}, function(err, items) {
+	if (err) {
+	  res.sendStatus(403);
+	  return;
+	}
+  console.log(items);
+	// return value is user's calling
+	res.json({calling: user.calling});
+      });
+    } else {
+      res.sendStatus(403);
+    }
+  });
+});
+
+
+
+/*
 // get an item
 app.get('/api/items/:item_id', function (req,res) {
   // validate the supplied token

@@ -1,10 +1,10 @@
 var $ = require("jquery");
 
 // API object
-var api = {
+var api = { 
   // get the list of items, call the callback when complete
-  getItems: function(cb) {
-    var url = "/api/items";
+  getCalling: function(cb) {
+    var url = "/api/getcalling";
     $.ajax({
       url: url,
       dataType: 'json',
@@ -23,14 +23,15 @@ var api = {
     });
   },
   // add an item, call the callback when complete
-  addItem: function(title, cb) {
-    var url = "/api/items";
+  addCalling: function(title, name, cb) {
+    var url = "/api/users/addcalling";
     $.ajax({
       url: url,
       contentType: 'application/json',
       data: JSON.stringify({
-        item: {
-          'title': title
+        user: {
+          'calling': title,
+          'username' : name
         }
       }),
       type: 'POST',
@@ -47,7 +48,7 @@ var api = {
       }
     });
 
-  },
+  },/*
   // update an item, call the callback when complete
   updateItem: function(item, cb) {
     var url = "/api/items/" + item.id;
@@ -92,7 +93,7 @@ var api = {
           cb(false, status);
       }
     });
-  }
+  }*/
 
 };
 

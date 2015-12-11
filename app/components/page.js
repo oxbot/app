@@ -25,8 +25,8 @@ var Page = React.createClass({
     var name = auth.getName();
     return (
       <div>
-        <h1>Page</h1>
-        <p>Demo another page here {name}</p>
+        <h1>Profile</h1>
+        <p>Welcome {name}</p>
       </div>
     );
   }
